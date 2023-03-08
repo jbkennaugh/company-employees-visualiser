@@ -1,0 +1,27 @@
+{
+  "name": "company-employees-visualiser",
+  "version": "1.0.0",
+  "description": "A console app that takes inputs from a user based on a series of prompts using inquirer and node.js, and visualises the list of added company employees on a stylish html page",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbkennaugh/company-employees-visualiser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jbkennaugh/company-employees-visualiser/issues"
+  },
+  "homepage": "https://github.com/jbkennaugh/company-employees-visualiser#readme",
+  "dependencies": {
+    "inquirer": "^8.2.5",
+    "jest": "^29.5.0"
+  }
+}

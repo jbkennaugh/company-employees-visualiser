@@ -19,20 +19,41 @@ const managerQuestions = [
     {
         type: "input",
         name: "id",
-        message: "Please enter the manager's employee ID:"
+        message: "Please enter the manager's employee ID:",
+        validate: (id) => {
+            if(/^\d+$/.test(id)){
+                if(teamMembers.filter(member => member.getId() === id).length > 0){
+                    return `Another employee already has ID: ${id}, please select another`
+                }
+                else{ return true; }
+            }
+
+            return "Please only enter numbers"
+        }
     },
     {
         type: "input",
         name: "email",
-        message: "Please enter the manager's email address:"
+        message: "Please enter the manager's email address:",
+        validate: (email) => {
+            if(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email)){ 
+                return true; 
+            }
+            
+            return `You must enter a valid email address`;
+        }
     },
     {
         type: "input",
         name: "officeNumber",
-        message: "Please enter the manager's office number:"
+        message: "Please enter the manager's office number:",
+        validate: (officeNumber) => {
+            if(/^\d+$/.test(officeNumber)){ return true; }
+
+            return "Please only enter numbers"
+        }
     }
 ]
-
 const engineerQuestions = [
     {
         type: "input",
@@ -42,12 +63,29 @@ const engineerQuestions = [
     {
         type: "input",
         name: "id",
-        message: "Please enter the engineer's employee ID:"
+        message: "Please enter the engineer's employee ID:",
+        validate: (id) => {
+            if(/^\d+$/.test(id)){
+                if(teamMembers.filter(member => member.getId() === id).length > 0){
+                    return `Another employee already has ID: ${id}, please select another`
+                }
+                else{ return true; }
+            }
+
+            return "Please only enter numbers"
+        }
     },
     {
         type: "input",
         name: "email",
-        message: "Please enter the engineer's email address:"
+        message: "Please enter the engineer's email address:",
+        validate: (email) => {
+            if(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email)){ 
+                return true; 
+            }
+            
+            return `You must enter a valid email address`;
+        }
     },
     {
         type: "input",
@@ -55,7 +93,6 @@ const engineerQuestions = [
         message: "Please enter the engineer's GitHub:"
     }
 ]
-
 const internQuestions = [
     {
         type: "input",
@@ -65,12 +102,29 @@ const internQuestions = [
     {
         type: "input",
         name: "id",
-        message: "Please enter the interns's employee ID:"
+        message: "Please enter the intern's employee ID:",
+        validate: (id) => {
+            if(/^\d+$/.test(id)){
+                if(teamMembers.filter(member => member.getId() === id).length > 0){
+                    return `Another employee already has ID: ${id}, please select another`
+                }
+                else{ return true; }
+            }
+
+            return "Please only enter numbers"
+        }
     },
     {
         type: "input",
         name: "email",
-        message: "Please enter the intern's email address:"
+        message: "Please enter the intern's email address:",
+        validate: (email) => {
+            if(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email)){ 
+                return true; 
+            }
+            
+            return `You must enter a valid email address`;
+        }
     },
     {
         type: "input",
@@ -78,40 +132,45 @@ const internQuestions = [
         message: "Please enter the interns's school:"
     }
 ]
-
-const defaultMenu = {
+const menuPrompt = [{
     type: "list",
     name: "action",
     message: "What would you like to do next?",
     choices: ["Add an Engineer", "Add an Intern", "Finish building the team."],
     default: "Finish building the team."
+}];
+
+let teamMembers = new Array();
+
+//initialise
+inquirer.prompt(managerQuestions).then((manager) => {
+    const employee = new Manager(manager.name, manager.id, manager.email, manager.officeNumber)
+    teamMembers.push(employee);
+    mainMenu();
+})
+
+const mainMenu = () => {
+    inquirer.prompt(menuPrompt).then((selection) => {
+        let action = selection.action;
+
+        if(action === "Finish building the team."){
+            console.log("Team submitted, building webpage...");
+            fs.writeFileSync(outputPath, render(teamMembers));
+            console.log(`Webpage created, check ${OUTPUT_DIR} for the result!`);
+        }
+        else if(action === "Add an Engineer"){
+            inquirer.prompt(engineerQuestions).then((engineer) => {
+                const employee = new Engineer(engineer.name, engineer.id, engineer.email, engineer.github);
+                teamMembers.push(employee);
+                mainMenu();
+            })
+        }
+        else{
+            inquirer.prompt(internQuestions).then((intern) => {
+                const employee = new Intern(intern.name, intern.id, intern.email, intern.school);
+                teamMembers.push(employee);
+                mainMenu();
+            })
+        }
+    })
 }
-
-// TODO: Write Code to gather information about the development team members, and render the HTML file.
-
-/* Ensuring classes work
-const manager = new Manager("01", "Bob", "Bob email", 4)
-const engineer = new Engineer("01", "Jane", "Jane email", "Jane github")
-const intern = new Intern("01", "Steve", "Steve email", 4)
-const employee = new Employee("01", "Dan", "Dan email")
-
-console.log(`ID: ${manager.getId()}`)
-console.log(`Name: ${manager.getName()}`);
-console.log(`Email: ${manager.getEmail()}`);
-console.log(`Role: ${manager.getRole()}\n\n`);
-
-console.log(`ID: ${engineer.getId()}`)
-console.log(`Name: ${engineer.getName()}`);
-console.log(`Email: ${engineer.getEmail()}`);
-console.log(`Role: ${engineer.getRole()}\n\n`);
-
-console.log(`ID: ${intern.getId()}`)
-console.log(`Name: ${intern.getName()}`);
-console.log(`Email: ${intern.getEmail()}`);
-console.log(`Role: ${intern.getRole()}\n\n`);
-
-console.log(`ID: ${employee.getId()}`)
-console.log(`Name: ${employee.getName()}`);
-console.log(`Email: ${employee.getEmail()}`);
-console.log(`Role: ${employee.getRole()}\n\n`);
-*/
